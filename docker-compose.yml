@@ -1,44 +1,54 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-inventory}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
-  
+      - "${POSTGRES_PORT}:5432"
+    networks:
+      - app-network
+
   backend:
     build: ./backend
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - POSTGRES_DB=${POSTGRES_DB:-inventory}
-      - PORT=${PORT:-3001}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - PORT=${BACKEND_PORT}
     volumes:
       - ./backend:/app
       - /app/node_modules
     ports:
-      - "3001:3001"
+      - "${BACKEND_PORT}:3001"
     depends_on:
       - db
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:3000"
     depends_on:
       - backend
-    environment:
-      - PORT=3000
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    networks:
+      - app-network
 
 volumes:
   db-data:
+
+networks:
+  app-network:

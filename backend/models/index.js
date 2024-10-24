@@ -2,7 +2,6 @@
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
 
-// Pobranie zmiennych środowiskowych dla bezpieczeństwa
 const sequelize = new Sequelize(
   process.env.POSTGRES_DB || 'inventory',
   process.env.POSTGRES_USER || 'user',

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Table, Button, Container, Navbar, Nav } from 'react-bootstrap';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -29,19 +30,52 @@ const ProductList = () => {
   };
 
   return (
-    <div>
-      <h1>Product List</h1>
-      <Link to="/add-product">Add Product</Link>
-      <ul>
-        {products.map(product => (
-          <li key={product.id}>
-            {product.name} - ${product.price} - Stock: {product.stock}
-            <Link to={`/edit-product/${product.id}`}>Edit</Link>
-            <button onClick={() => deleteProduct(product.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container>
+          <Navbar.Brand href="/">Inventory Management</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/add-product">Add Product</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <Container className="mt-4">
+        <h1>Product List</h1>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price ($)</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map(product => (
+              <tr key={product.id}>
+                <td>{product.id}</td>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+                <td>{product.stock}</td>
+                <td>
+                  <Button variant="primary" as={Link} to={`/edit-product/${product.id}`} className="me-2">
+                    Edit
+                  </Button>
+                  <Button variant="danger" onClick={() => deleteProduct(product.id)}>
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Container>
+    </>
   );
 };
 
